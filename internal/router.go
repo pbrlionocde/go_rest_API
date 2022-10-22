@@ -8,5 +8,4 @@ func Start() {
 	router := gin.Default()
 	Endpoints(router)
 	router.Run()
-
 }
