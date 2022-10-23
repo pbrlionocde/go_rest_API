@@ -29,6 +29,10 @@ type User struct {
 	Password  string `json:"password"   binding:"required"`
 }
 
+type respError struct {
+	Error string `json:"error"`
+}
+
 func PasswordToHash(password string) string {
 	bytePassword := []byte(password)
 	hasher := sha1.New()
@@ -45,7 +49,11 @@ func CreateUser(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, errorResp)
 		return
 	}
-	err := dbConn.Create(
+	if existsUser := getUserByEmail(user.Email); existsUser.Email != "" {
+		c.IndentedJSON(http.StatusConflict, respError{Error:"user already exists"})
+		return
+	}
+	dbConn.Create(
 		&models.User{
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
@@ -53,11 +61,11 @@ func CreateUser(c *gin.Context) {
 			Password:  PasswordToHash(user.Password),
 		},
 	)
-	if err != nil {
-		errorLogger.Println(err)
-		return
-	}
+	c.IndentedJSON(http.StatusCreated, getUserByEmail(user.Email))
+}
+
+func getUserByEmail(email string) (*models.User) {
 	var dbUser *models.User
-	dbConn.First(&dbUser, "email = ?", user.Email)
-	c.IndentedJSON(http.StatusCreated, dbUser)
+	dbConn.First(&dbUser, "email = ?", email)
+	return dbUser
 }
