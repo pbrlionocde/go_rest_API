@@ -9,14 +9,21 @@ import (
 )
 
 var errorLogger *log.Logger
+var errorAuthorizeLogger *log.Logger
 
 func init() {
-	errlogfile, _ := os.Create("logs/error.log")
-	errorLogger = log.New(io.MultiWriter(errlogfile), "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+	errLogFile, _ := os.Create("logs/error.log")
+	errAuthorizeLogFile, _ := os.Create("logs/authorize_error.log")
+	errorLogger = log.New(io.MultiWriter(errLogFile), "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+	errorAuthorizeLogger = log.New(io.MultiWriter(errAuthorizeLogFile), "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func GetErrorLogger() *log.Logger {
 	return errorLogger
+}
+
+func GetAuthorizeErrorLogger() *log.Logger {
+	return errorAuthorizeLogger
 }
 
 func ErrorToJSON(err error) map[string]string {

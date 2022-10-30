@@ -69,3 +69,7 @@ func getUserByEmail(email string) (*models.User) {
 	dbConn.First(&dbUser, "email = ?", email)
 	return dbUser
 }
+
+func TestToken(c *gin.Context) {
+	c.JSON(http.StatusOK, "good")
+}

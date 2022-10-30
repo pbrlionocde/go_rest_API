@@ -8,6 +8,7 @@ import (
 )
 
 const configPath = "configs/db_config.yml"
+const jwtConfigPath = "configs/jwt_config.yml"
 
 type dbYamlConfig struct {
 	Port     int    `yaml:"port"`
@@ -26,4 +27,21 @@ func GetDbYamlConfig() dbYamlConfig {
 		log.Fatal(err)
 	}
 	return loadedData["db"]
+}
+
+type jwtYamlConfig struct {
+	TimeZone string `yaml:"TimeZone"`
+}
+
+func GetJwtYamlConfig() jwtYamlConfig {
+	file, err := ioutil.ReadFile(jwtConfigPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	loadedData := make(map[string]jwtYamlConfig)
+	err = yaml.Unmarshal(file, &loadedData)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return loadedData["jwt"]
 }
